@@ -1,0 +1,2 @@
+serviceClass: mayo.edu.client.JsonService
+path: 58F65931CCF0AB3060493A4A276303F6.gwt.rpc

@@ -1,0 +1,3 @@
+# Module xmltojson
+# RPC service class, partial path of RPC policy file
+mayo.edu.client.JsonService, 58F65931CCF0AB3060493A4A276303F6.gwt.rpc
