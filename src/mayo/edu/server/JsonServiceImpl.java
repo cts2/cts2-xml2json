@@ -6,11 +6,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 
+import javax.xml.transform.TransformerException;
+
 import mayo.edu.client.JsonService;
 import mayo.edu.shared.XmlJsonResponse;
 
-import org.json.XML;
+import org.json.XMLToJson;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -19,24 +24,26 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class JsonServiceImpl extends RemoteServiceServlet implements
 		JsonService {
-
-	private static final int INDENT_SIZE = 3;
+	
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	JsonParser jp = new JsonParser();
 
 	@Override
-	public String getJsonFromXml(String xml) throws IllegalArgumentException {
-
-		//makeRestCall("http://informatics.mayo.edu/cts2/rest/codesystems");
-
-		return XML.toJSONObject(xml).toString(INDENT_SIZE);
+	public String getJsonFromXml(String xml) throws IllegalArgumentException, TransformerException {
+		return prettify(new XMLToJson(this.getServletContext()).toJson(xml));
+	}
+	
+	private String prettify(String json) {	
+		 return gson.toJson(jp.parse(json));
 	}
 
 	
 	@Override
 	public XmlJsonResponse getJsonFromRestService(String restUrl)
-			throws IllegalArgumentException {
+			throws IllegalArgumentException, TransformerException {
 		
 		String xml = makeRestCall(restUrl);
-		String json = XML.toJSONObject(xml).toString(INDENT_SIZE);
+		String json = new XMLToJson(this.getServletContext()).toJson(xml);
 		
 		XmlJsonResponse response = new XmlJsonResponse();
 		response.setJson(json);
