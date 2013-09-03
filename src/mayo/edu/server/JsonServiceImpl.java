@@ -6,16 +6,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 
-import javax.xml.transform.TransformerException;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 import mayo.edu.client.JsonService;
 import mayo.edu.shared.XmlJsonResponse;
 
 import org.json.XMLToJson;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -25,25 +23,46 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class JsonServiceImpl extends RemoteServiceServlet implements
 		JsonService {
 	
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	JsonParser jp = new JsonParser();
+	public String getBasePath() {
+        String dataPath;
+
+        HttpSession httpSession = getThreadLocalRequest().getSession(true);
+        ServletContext context = httpSession.getServletContext();
+
+        String realContextPath = context.getRealPath(getThreadLocalRequest().getContextPath());
+
+        if (isDevelopmentMode()) {
+            dataPath = realContextPath;
+        } else {
+            dataPath = realContextPath + "/../";
+        }
+
+        return dataPath;
+    }
+	
+	/**
+     * Determine if the app is in development mode. To do this get the request
+     * URL and if it contains 127.0.0.1, then it is in development mode.
+     * 
+     * @return
+     */
+    private boolean isDevelopmentMode() {
+        return getThreadLocalRequest().getHeader("Referer").contains("127.0.0.1");
+    }
+
 
 	@Override
-	public String getJsonFromXml(String xml) throws IllegalArgumentException, TransformerException {
-		return prettify(new XMLToJson(this.getServletContext()).toJson(xml));
-	}
-	
-	private String prettify(String json) {	
-		 return gson.toJson(jp.parse(json));
+	public String getJsonFromXml(String xml) throws IllegalArgumentException {
+		return new XMLToJson(getBasePath()).toJson(xml);
 	}
 
 	
 	@Override
 	public XmlJsonResponse getJsonFromRestService(String restUrl)
-			throws IllegalArgumentException, TransformerException {
+			throws IllegalArgumentException {
 		
 		String xml = makeRestCall(restUrl);
-		String json = new XMLToJson(this.getServletContext()).toJson(xml);
+		String json = new XMLToJson(getBasePath()).toJson(xml);
 		
 		XmlJsonResponse response = new XmlJsonResponse();
 		response.setJson(json);

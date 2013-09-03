@@ -25,8 +25,7 @@ import com.smartgwt.client.widgets.layout.VLayout;
  */
 public class XmlToJson implements EntryPoint {
 
-	private static final String INFO = "This page will take XML and convert it to JSON using Crockford's JSON-java API found here: https://github.com/douglascrockford/JSON-java. </br>" +
-	                                   "Documentation on the API can be found here: http://www.json.org/java/ </br>" + 
+	private static final String INFO = "This page will take XML and convert it to JSON using the proposed <a href='http://www.omg.org/members/cgi-bin/doc?ad/13-08-01.pdf'>OMG XML to JSON Transformation Rules</a> </br>" +
 	                                   "<p>" + 
 	                                   "<ul> " + 
 	                                   "<li>Enter a REST service that returns XML and this will display the XML and converted JSON.</li>" +
