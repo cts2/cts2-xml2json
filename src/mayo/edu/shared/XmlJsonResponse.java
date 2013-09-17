@@ -1,10 +1,10 @@
 package mayo.edu.shared;
 
-import java.io.Serializable;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class XmlJsonResponse implements Serializable {
+public class XmlJsonResponse implements IsSerializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	
 	String i_json;
 	String i_xml;

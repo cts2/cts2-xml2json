@@ -1954,3 +1954,44 @@ Translatable source found in...
 Found 2254 cached units.  Used 2254 / 2254 units from cache.
 Removing invalidated units
 Finding entry point classes
+Public resources found in...
+Translatable source found in...
+Found 0 cached/archived units.  Used 0 / 2820 units from cache.
+Compiling...
+   10% complete (ETR: 40 seconds)
+   10% complete (ETR: 40 seconds)
+   20% complete (ETR: 33 seconds)
+   30% complete (ETR: 25 seconds)
+   40% complete (ETR: 20 seconds)
+   50% complete (ETR: 15 seconds)
+   60% complete (ETR: 11 seconds)
+   70% complete (ETR: 7 seconds)
+   80% complete (ETR: 5 seconds)
+   90% complete (ETR: 2 seconds)
+   100% complete (ETR: 0 seconds)
+   Compilation completed in 24.92 seconds
+Validating units:
+   [ERROR] Errors in 'jar:file:/Users/mrf7578/git/cts2-xml2json/lib/gwt-user.jar!/com/google/gwt/validation/client/BaseGwtConfiguration.java'
+      [ERROR] Line 54: The constructor GwtConfigurationState() is undefined
+Removing invalidated units
+Finding entry point classes
+Public resources found in...
+Translatable source found in...
+Found 2820 cached/archived units.  Used 2820 / 2820 units from cache.
+Compiling...
+   Compilation completed in 0.00 seconds
+Validating units:
+   [ERROR] Errors in 'jar:file:/Users/mrf7578/git/cts2-xml2json/lib/gwt-user.jar!/com/google/gwt/validation/client/BaseGwtConfiguration.java'
+      [ERROR] Line 54: The constructor GwtConfigurationState() is undefined
+Removing invalidated units
+Finding entry point classes
+Public resources found in...
+Translatable source found in...
+Found 2820 cached/archived units.  Used 2820 / 2820 units from cache.
+Compiling...
+   Compilation completed in 0.00 seconds
+Validating units:
+   [ERROR] Errors in 'jar:file:/Users/mrf7578/git/cts2-xml2json/lib/gwt-user.jar!/com/google/gwt/validation/client/BaseGwtConfiguration.java'
+      [ERROR] Line 54: The constructor GwtConfigurationState() is undefined
+Removing invalidated units
+Finding entry point classes
