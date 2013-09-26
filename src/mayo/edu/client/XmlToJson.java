@@ -7,15 +7,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.HeaderControls;
+import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.VerticalAlignment;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.HTMLPane;
-import com.smartgwt.client.widgets.Window;
+import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -34,9 +35,12 @@ public class XmlToJson implements EntryPoint {
 	                                   "<li>Enter some XML and it will be converted JSON</li>" +
 	                                   "</ul>";
 	
+	private static final String NO_REST_URL_MSG = "Please enter a URL.";
+	private static final String NO_XML_MSG = "Please enter some XML.";
+	
 	private VLayout i_overallLayout;
-	private TextAreaItem i_inputText;
-	private TextAreaItem i_outputText;
+	private RichTextEditor i_inputText;
+	private RichTextEditor i_outputText;
 	private TextItem i_restTextItem; 
 	private Button i_submitRest;
 	private Button i_submit;
@@ -58,8 +62,8 @@ public class XmlToJson implements EntryPoint {
         i_overallLayout = new VLayout();
         i_overallLayout.setWidth100();
         i_overallLayout.setHeight100();
-        i_overallLayout.setMargin(15);
-        i_overallLayout.setMembersMargin(10);
+        i_overallLayout.setMargin(5);
+        i_overallLayout.setMembersMargin(15);
         i_overallLayout.setBackgroundColor("#88a0a6");
        
         HLayout windowLayout = new HLayout();
@@ -77,26 +81,38 @@ public class XmlToJson implements EntryPoint {
         
 		// Draw the Layout - main layout
         RootLayoutPanel.get().add(i_overallLayout);
+
 	}
 
 	private VLayout getInfoLabel() {
 		
 		VLayout infoLayout = new VLayout();
 		infoLayout.setWidth100();
-		infoLayout.setHeight(120);
+		infoLayout.setHeight(160);
 		infoLayout.setBackgroundColor("white");
 		
-		HTMLPane htmlPane = new HTMLPane();
-		htmlPane.setWidth100();  
-        htmlPane.setHeight100();  
-        htmlPane.setMargin(10);
-        htmlPane.setShowEdges(true);  
-        htmlPane.setContents("<b>" + INFO +"</b>" );  
-        htmlPane.setBackgroundColor("#dbe2e4");
-        htmlPane.draw();
-
-        infoLayout.addMember(htmlPane);
+        infoLayout.addMember(createInfoPanel());
         return infoLayout;
+	}
+
+	private HLayout getWindowLabel(String title){
+		Label label = new Label();  
+        label.setHeight(20);
+        label.setWidth100();
+        label.setPadding(2);  
+        label.setBackgroundColor("#E1E1E1");
+        label.setAlign(Alignment.LEFT);  
+        label.setValign(VerticalAlignment.CENTER);  
+        label.setWrap(false);    
+        label.setShowEdges(true);  
+        label.setContents("<b>" + title + "</b>");  
+        
+        HLayout labelLayout = new HLayout();
+        labelLayout.setWidth100();
+        labelLayout.setHeight(30);
+        labelLayout.addMember(label);
+        
+        return labelLayout;
 	}
 	
 	/**
@@ -126,33 +142,37 @@ public class XmlToJson implements EntryPoint {
 			@Override
 			public void onClick(ClickEvent event) {
 				
+				if (i_restTextItem.getDisplayValue().trim().length() == 0){
+					SC.warn(NO_REST_URL_MSG);
+				}
 
-				// Need to send in the overall layout so the whole
-                // screen is greyed out.
-                i_busyIndicator = new ModalWindow(i_overallLayout, 40, "#dedede");
-                i_busyIndicator.setLoadingIcon("loading_circle.gif");
-                i_busyIndicator.show("Getting XML and JSON", true);
-				
-				rpcService.getJsonFromRestService(i_restTextItem.getDisplayValue(), new AsyncCallback<XmlJsonResponse>() {
+				else {
+					// Need to send in the overall layout so the whole
+	                // screen is greyed out.
+	                i_busyIndicator = new ModalWindow(i_overallLayout, 40, "#dedede");
+	                i_busyIndicator.setLoadingIcon("loading_circle.gif");
+	                i_busyIndicator.show("Getting XML and JSON", true);
 					
-					@Override
-					public void onSuccess(XmlJsonResponse xmlJsonResponse) {
-						i_inputText.setValue(xmlJsonResponse.getXml());
-						i_outputText.setValue(xmlJsonResponse.getJson());
+					rpcService.getJsonFromRestService(i_restTextItem.getDisplayValue(), new AsyncCallback<XmlJsonResponse>() {
 						
-						// hide the busy indicator.
-                        i_busyIndicator.hide();
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						i_outputText.setValue("Error retrieving JSON: " + caught.toString());
+						@Override
+						public void onSuccess(XmlJsonResponse xmlJsonResponse) {
+							i_inputText.setValue(xmlJsonResponse.getXml());
+							i_outputText.setValue(xmlJsonResponse.getJson());
+							
+							// hide the busy indicator.
+	                        i_busyIndicator.hide();
+						}
 						
-						// hide the busy indicator.
-                        i_busyIndicator.hide();
-					}
-				});
-				
+						@Override
+						public void onFailure(Throwable caught) {
+							i_outputText.setValue("Error retrieving JSON: " + caught.toString());
+							
+							// hide the busy indicator.
+	                        i_busyIndicator.hide();
+						}
+					});
+				}
 			}
 		});
 		
@@ -180,50 +200,42 @@ public class XmlToJson implements EntryPoint {
 	}
 
 	private VLayout createWindow(boolean isInput, String title) {
-		final DynamicForm form = new DynamicForm();  
-		form.setWidth100();
-		form.setHeight100();
-		form.setAlign(Alignment.CENTER);
 		
-		// text area
-		TextAreaItem textArea = new TextAreaItem();
-		
-	    textArea.setWidth(600);
-		textArea.setHeight(600);
-		textArea.setShowTitle(false);
-		textArea.setAlign(Alignment.CENTER);
+		RichTextEditor richTextEditor = new RichTextEditor();  
+        richTextEditor.setHeight100(); 
+        richTextEditor.setWidth100();
+        richTextEditor.setOverflow(Overflow.HIDDEN);  
+        richTextEditor.setCanDragResize(true);  
+        richTextEditor.setShowEdges(true);  
+        
+        
+        // hide all of the rich text controls
+        richTextEditor.setControlGroups(new String[]{"fontControls"});
 		
 		if (isInput){
-			i_inputText = textArea;
+			i_inputText = richTextEditor;
 		}
 		else {
-			i_outputText = textArea;
+			i_outputText = richTextEditor;
 		}
-		
-		form.setItems(textArea);
-               
-        Window window = new Window();  
-        window.setTitle(title);  
-        window.setWidth100();  
-        window.setHeight100(); 
-        
-        window.setHeaderControls(HeaderControls.HEADER_LABEL);  
-		window.addItem(form);
+		richTextEditor.setValue("");
 
 		VLayout textLayout = new VLayout();  
 		textLayout.setWidth100();  
 		textLayout.setHeight100();  
-		textLayout.setMargin(25);
-		textLayout.addMember(window);
+		textLayout.setMargin(5);
+		textLayout.addMember(getWindowLabel(title));
+		textLayout.addMember(richTextEditor);
 		
         return textLayout;
+		
 	}
 	
 	private HLayout getButtonLayout() {
 		
 		HLayout buttonLayout = new HLayout();
 		buttonLayout.setWidth100();
-		buttonLayout.setHeight(55);
+		buttonLayout.setHeight(30);
 		buttonLayout.setAlign(Alignment.CENTER);
 		buttonLayout.setMembersMargin(20);
 		
@@ -248,32 +260,39 @@ public class XmlToJson implements EntryPoint {
 			@Override
 			public void onClick(ClickEvent event) {
 				
-				// Need to send in the overall layout so the whole
-                // screen is greyed out.
-                i_busyIndicator = new ModalWindow(i_overallLayout, 40, "#dedede");
-                i_busyIndicator.setLoadingIcon("loading_circle.gif");
-                i_busyIndicator.show("Generating JSON", true);
+				System.out.println("input = *" + i_inputText.getValue() + "*");
 				
-				rpcService.getJsonFromXml(i_inputText.getDisplayValue(), new AsyncCallback<String>() {
+				if (i_inputText.getValue().trim().length() < 5){
+					SC.warn(NO_XML_MSG);
+				}
+
+				else {
+					// Need to send in the overall layout so the whole
+	                // screen is greyed out.
+	                i_busyIndicator = new ModalWindow(i_overallLayout, 40, "#dedede");
+	                i_busyIndicator.setLoadingIcon("loading_circle.gif");
+	                i_busyIndicator.show("Generating JSON", true);
 					
-					@Override
-					public void onSuccess(String jsonString) {
-						i_outputText.setValue(jsonString);
+					rpcService.getJsonFromXml(i_inputText.getValue(), new AsyncCallback<String>() {
 						
-						// hide the busy indicator.
-                        i_busyIndicator.hide();
+						@Override
+						public void onSuccess(String jsonString) {
+							i_outputText.setValue(jsonString);
+							
+							// hide the busy indicator.
+	                        i_busyIndicator.hide();
+							
+						}
 						
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						i_outputText.setValue("Error retrieving JSON: " + caught.toString());
-						
-						// hide the busy indicator.
-                        i_busyIndicator.hide();
-					}
-				});
-				
+						@Override
+						public void onFailure(Throwable caught) {
+							i_outputText.setValue("Error retrieving JSON: " + caught.toString());
+							
+							// hide the busy indicator.
+	                        i_busyIndicator.hide();
+						}
+					});
+				}
 			}
 		});
 		
@@ -283,5 +302,33 @@ public class XmlToJson implements EntryPoint {
 		return buttonLayout;
 	}
 	
+	/**
+     * HTMLPane to display data/links.
+     * 
+     * @return
+     */
+    private HTMLPane createInfoPanel() {
+        HTMLPane htmlPane = new HTMLPane();
+        htmlPane.setWidth100();
+        htmlPane.setHeight100();
+        //htmlPane.setMargin(10);
+        //htmlPane.setShowEdges(true); 
+        //htmlPane.setPadding(10);
+        htmlPane.setBackgroundColor("#eeeeee");
+
+        String contextPath = GWT.getHostPageBaseURL();
+        System.out.println("ContextPath: " + contextPath);
+        
+        try {
+        
+	        String fileLocation = contextPath + "data/frontPageData.html";
+	        htmlPane.setContentsURL(fileLocation);
+        }
+        catch (Exception e) {
+			SC.warn("Couldn't find info page.");
+		}
+
+        return htmlPane;
+    }
 		
 }
