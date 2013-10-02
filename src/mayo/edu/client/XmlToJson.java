@@ -7,16 +7,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.HTMLPane;
-import com.smartgwt.client.widgets.Label;
-import com.smartgwt.client.widgets.RichTextEditor;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -39,8 +37,8 @@ public class XmlToJson implements EntryPoint {
 	private static final String NO_XML_MSG = "Please enter some XML.";
 	
 	private VLayout i_overallLayout;
-	private RichTextEditor i_inputText;
-	private RichTextEditor i_outputText;
+	private TextAreaItem i_inputText;
+	private TextAreaItem i_outputText;
 	private TextItem i_restTextItem; 
 	private Button i_submitRest;
 	private Button i_submit;
@@ -93,26 +91,6 @@ public class XmlToJson implements EntryPoint {
 		
         infoLayout.addMember(createInfoPanel());
         return infoLayout;
-	}
-
-	private HLayout getWindowLabel(String title){
-		Label label = new Label();  
-        label.setHeight(20);
-        label.setWidth100();
-        label.setPadding(2);  
-        label.setBackgroundColor("#E1E1E1");
-        label.setAlign(Alignment.LEFT);  
-        label.setValign(VerticalAlignment.CENTER);  
-        label.setWrap(false);    
-        label.setShowEdges(true);  
-        label.setContents("<b>" + title + "</b>");  
-        
-        HLayout labelLayout = new HLayout();
-        labelLayout.setWidth100();
-        labelLayout.setHeight(30);
-        labelLayout.addMember(label);
-        
-        return labelLayout;
 	}
 	
 	/**
@@ -201,34 +179,39 @@ public class XmlToJson implements EntryPoint {
 
 	private VLayout createWindow(boolean isInput, String title) {
 		
-		RichTextEditor richTextEditor = new RichTextEditor();  
-        richTextEditor.setHeight100(); 
-        richTextEditor.setWidth100();
-        richTextEditor.setOverflow(Overflow.HIDDEN);  
-        richTextEditor.setCanDragResize(true);  
-        richTextEditor.setShowEdges(true);  
-        
-        
-        // hide all of the rich text controls
-        richTextEditor.setControlGroups(new String[]{"fontControls"});
+		final DynamicForm form = new DynamicForm();  		
+		form.setGroupTitle(title);  
+        form.setIsGroup(true);  
+        form.setWidth100();  
+        form.setHeight100();  
+        form.setNumCols(1);  
+        form.setPadding(5);  
+        form.setCanDragResize(true);  
+		
+		// text area
+		TextAreaItem textArea = new TextAreaItem();
+		
+	    textArea.setWidth("*");
+		textArea.setHeight("*");
+		textArea.setShowTitle(false);
+		textArea.setAlign(Alignment.CENTER);
 		
 		if (isInput){
-			i_inputText = richTextEditor;
+			i_inputText = textArea;
 		}
 		else {
-			i_outputText = richTextEditor;
+			i_outputText = textArea;
 		}
-		richTextEditor.setValue("");
+		
+		form.setItems(textArea);
 
 		VLayout textLayout = new VLayout();  
 		textLayout.setWidth100();  
 		textLayout.setHeight100();  
-		textLayout.setMargin(5);
-		textLayout.addMember(getWindowLabel(title));
-		textLayout.addMember(richTextEditor);
+		textLayout.setMargin(10);
+		textLayout.addMember(form);
 		
         return textLayout;
-		
 	}
 	
 	private HLayout getButtonLayout() {
@@ -262,7 +245,7 @@ public class XmlToJson implements EntryPoint {
 				
 				System.out.println("input = *" + i_inputText.getValue() + "*");
 				
-				if (i_inputText.getValue().trim().length() < 5){
+				if (i_inputText.getDisplayValue().trim().length() == 0){
 					SC.warn(NO_XML_MSG);
 				}
 
@@ -273,7 +256,7 @@ public class XmlToJson implements EntryPoint {
 	                i_busyIndicator.setLoadingIcon("loading_circle.gif");
 	                i_busyIndicator.show("Generating JSON", true);
 					
-					rpcService.getJsonFromXml(i_inputText.getValue(), new AsyncCallback<String>() {
+					rpcService.getJsonFromXml(i_inputText.getDisplayValue(), new AsyncCallback<String>() {
 						
 						@Override
 						public void onSuccess(String jsonString) {
