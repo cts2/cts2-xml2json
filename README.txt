@@ -5,8 +5,8 @@ Use notes:
 
 Installation notes:
 1) This is currently installed at http://informatics.mayo.edu/cts2/services/xmlToJson.  For curious reasons, the actual 
-   install on the server is in webapps/xml2Json. Wherever it is installed, you may need to also create an inner directory
-   (webapps/xml2Json/xml2Json) to actually run.
+   install on the server is in webapps/xmlToJson. Wherever it is installed, you may need to also create an inner directory
+   (webapps/xmlToJson/xmlToJson) to actually run.
 2) The war is currently compiled with Java 1.6
 3) org/json/XMLToJson.java currently resides in two places:
 	1) This project
