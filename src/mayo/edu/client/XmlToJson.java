@@ -24,15 +24,6 @@ import com.smartgwt.client.widgets.layout.VLayout;
  */
 public class XmlToJson implements EntryPoint {
 
-	private static final String INFO = "This page will take XML and convert it to JSON using the proposed <a href='http://informatics.mayo.edu/svn/trunk/cts2/spec/submission/RFC_JSON/RFC_Submission/2013-09-01.pdf '>OMG XML to JSON Transformation Rules</a> </br>" +
-	                                   "<p>" + 
-	                                   "The XSLT transformation used by this application can be found <a href='https://github.com/cts2/cts2-xml2json/blob/master/war/xsl/XMLToJson.xsl'>HERE</a><br/>" +
-	                                   "and the project for this application is on <a href='https://github.com/cts2/cts2-xml2json'>GitHub</a><br/><p>" +
-	                                   "<ul> " + 
-	                                   "<li>Enter a REST service that returns XML and this will display the XML and converted JSON.</li>" +
-	                                   "<li>Enter some XML and it will be converted JSON</li>" +
-	                                   "</ul>";
-	
 	private static final String NO_REST_URL_MSG = "Please enter a URL.";
 	private static final String NO_XML_MSG = "Please enter some XML.";
 	
@@ -242,8 +233,6 @@ public class XmlToJson implements EntryPoint {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				
-				System.out.println("input = *" + i_inputText.getValue() + "*");
 				
 				if (i_inputText.getDisplayValue().trim().length() == 0){
 					SC.warn(NO_XML_MSG);
