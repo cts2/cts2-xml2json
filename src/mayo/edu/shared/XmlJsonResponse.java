@@ -3,6 +3,8 @@ package mayo.edu.shared;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class XmlJsonResponse implements IsSerializable {
+
+	private static final long serialVersionUID = 2L;
 	
 	String i_json;
 	String i_xml;
